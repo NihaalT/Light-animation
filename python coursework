@@ -1,0 +1,225 @@
+#!/usr/bin/env python
+import opc
+import time
+import math
+import random
+import datetime 
+import calendar
+import sys
+
+ADDRESS = 'localhost:7890'
+client = opc.Client(ADDRESS)
+
+def menu():
+    
+    print("MENU")
+
+    print("""
+1: Disco lights
+2: Choose the number of leds you want to view 
+3: Check date
+4: Create your own colour
+5: Check for a connection
+6: Sequence 
+7: End program
+
+Enter your choice: """)
+    choice=input()
+        
+    if choice==1:
+        Disco()
+    elif choice==2:
+        Led()
+    elif choice==3:
+        Date()
+    elif choice==4:
+        Colour()
+    elif choice==5:
+        Connection()
+    elif choice==6:
+        Sequence()
+    elif choice==7:
+        sys.exit
+    else:
+        menu()
+    
+            
+def Disco():
+    #initialises the amount of led's there are
+    led=360
+    
+    #initialises the colours
+    blue=[(0,0,255)]*led
+    red=[(255,0,0)]*led
+    yellow=[(255,255,0)]*led
+    green=[(0,255,0)]*led
+    orange=[(255,165,0)]*led
+    purple=[(255,0,255)]*led
+    white=[(255,255,255)]*led
+    black=[(0,0,0)]*led
+
+
+    while True:
+        client.put_pixels(blue)
+        time.sleep(0.05)
+        client.put_pixels(red)
+        time.sleep(0.05)
+        client.put_pixels(yellow)
+        time.sleep(0.05)
+        client.put_pixels(green)
+        time.sleep(0.05)
+        client.put_pixels(orange)
+        time.sleep(0.05)
+        client.put_pixels(purple)
+        time.sleep(0.05)
+        client.put_pixels(white)
+        time.sleep(0.05)
+
+    print("Would you like to return to menu")
+    print("1: yes")
+    choice=input()
+    if choice==1:
+        menu()
+    else:
+        sys.exit
+
+    
+            
+def Led():
+    #asks for user input 
+    print("Enter a number between 0-360")
+    numb=input()
+
+    led = [ (0,0,255) ] * numb
+    client.put_pixels(led)
+    time.sleep(0.05)
+
+    
+
+def Date():
+    led=360
+
+    blue=[(0,0,255)]*led
+    red=[(255,0,0)]*led
+    yellow=[(255,255,0)]*led
+    green=[(0,255,0)]*led
+    orange=[(255,165,0)]*led
+    purple=[(255,0,255)]*led
+    white=[(255,255,255)]*led
+    
+    #method to determine the amount of days 
+    def findDay(date): 
+        born = datetime.datetime.strptime(date, '%d %m %Y').weekday() 
+        return (calendar.day_name[born]) 
+      
+    date = '25 03 2020'
+    day=findDay(date)
+    print(findDay(date))
+
+    if((str(findDay(date)))=="Monday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(blue)
+        client.put_pixels(blue)
+    elif((str(findDay(date)))=="Tuesday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(red)
+        client.put_pixels(red)
+    elif((str(findDay(date)))=="Wednesday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(yellow)
+        client.put_pixels(yellow)
+    elif((str(findDay(date)))=="Thursday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(green)
+        client.put_pixels(green)
+    elif((str(findDay(date)))=="Friday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(orange)
+        client.put_pixels(orange)
+    elif((str(findDay(date)))=="Saturday"):
+        client=opc.Client('localhost:7890')
+        client.put_pixels(purple)
+        client.put_pixels(purple)
+    else:
+        client=opc.Client('localhost:7890')
+        client.put_pixels(white)
+        client.put_pixels(white)
+
+
+def Colour():
+    #initialises the amount of leds
+    numLEDs=360
+    
+    #asks the user to input value for colours
+    r=int(input("Enter a value for red from 0 to 255"))
+    g=int(input("Enter a value for green from 0 to 255"))
+    b=int(input("Enter a value for blue from 0 to 255"))
+
+    led=[(r,g,b)]*numLEDs
+
+    while True:
+        client.put_pixels(led)
+        time.sleep(0.05)
+
+
+def Connection():
+
+    #Test if it can connect
+    if client.can_connect():
+        print 'connected to %s' % ADDRESS
+    else:
+        print 'WARNING: could not connect to %s' % ADDRESS
+
+    #Send pixels forever
+    while True:
+        my_pixels = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+        random.shuffle(my_pixels)
+        if client.put_pixels(my_pixels, channel=0):
+            print 'connected'
+        else:
+            print 'not connected'
+        time.sleep(0.3)
+
+
+
+def Sequence():
+
+    numLEDs = 360
+
+    #uses arrays to allow one led to be lit in a sequential pattern and prints it
+    while True:
+        for i in range(0,59):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (0, 255, 255)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+        for i in range(60, 119):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (255, 0, 255)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+        for i in range(120,179):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (255, 255, 0)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+        for i in range(180, 239):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (0, 255, 255)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+        for i in range(240,299):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (255, 0, 255)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+        for i in range(300, 360):
+            pixels = [ (0,0,0) ] * numLEDs
+            pixels[i] = (255, 255, 0)
+            client.put_pixels(pixels)
+            time.sleep(0.05)
+
+
+menu()       
+
+
